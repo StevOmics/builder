@@ -1,0 +1,6 @@
+{
+  "name": "Name",
+  "title":"Example site",
+  "description": "Build your site with Handlebars",
+  "template":"index.hbs"
+}
