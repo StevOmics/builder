@@ -7,15 +7,27 @@ var data_files = fs.readdirSync("./data/");
 //all data goes in this file:
 // var data = JSON.parse(fs.readFileSync("data.json"));
 
+console.log("Copying include")
+fsx.copy('include/', 'dist/', function (err) {
+  if (err) return console.error(err)
+  console.log('success!')
+});
+
+console.log("Copying all templates")
+fsx.copy('templates/', 'dist/', function (err) {
+  if (err) return console.error(err)
+  console.log('success!')
+});
+
 data_files.forEach((dfname)=>{
-  console.log("Creating html for data file: "+dfname);
+  console.log("Customizing templates with data: "+dfname);
   var data = JSON.parse(fs.readFileSync((path.join(__dirname,"data/", dfname))), "utf-8");
   // console.log(data)
   if(data.template){
     var tfname = data.template;
   }
   else{
-    var tfname = "index.hbs";
+    var tfname = "index.html";
   }
     var template = fs.readFileSync(path.resolve(path.join(__dirname,"templates/", tfname)), "utf-8");
     var bname = path.basename(dfname, path.extname(dfname))
@@ -25,11 +37,7 @@ data_files.forEach((dfname)=>{
     buildHtml(name, template, data);
 })
 
-console.log("Copying include")
-fsx.copy('include/', 'dist/', function (err) {
-  if (err) return console.error(err)
-  console.log('success!')
-});
+
 
 function buildHtml(name,template, fileData) {
   var renderTemplate = Handlebars.compile(template);
