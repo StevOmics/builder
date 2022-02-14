@@ -7,7 +7,7 @@ var data_files = fs.readdirSync("./data/");
 //all data goes in this file:
 // var data = JSON.parse(fs.readFileSync("data.json"));
 
-console.log("Copying include")
+console.log("Copying include contents")
 fsx.copy('include/', 'dist/', function (err) {
   if (err) return console.error(err)
   console.log('success!')
@@ -17,25 +17,25 @@ console.log("Copying all templates")
 fsx.copy('templates/', 'dist/', function (err) {
   if (err) return console.error(err)
   console.log('success!')
+  data_files.forEach((dfname)=>{
+    console.log("Customizing templates with data: "+dfname);
+    var data = JSON.parse(fs.readFileSync((path.join(__dirname,"data/", dfname))), "utf-8");
+    // console.log(data)
+    if(data.template){
+      var tfname = data.template;
+    }
+    else{
+      var tfname = "index.html";
+    }
+      var template = fs.readFileSync(path.resolve(path.join(__dirname,"templates/", tfname)), "utf-8");
+      var bname = path.basename(dfname, path.extname(dfname))
+      var name = path.join('dist/', bname + '.html')
+      console.log("template file name: "+tfname);
+      console.log("output name: "+name);
+      buildHtml(name, template, data);
+  })
 });
 
-data_files.forEach((dfname)=>{
-  console.log("Customizing templates with data: "+dfname);
-  var data = JSON.parse(fs.readFileSync((path.join(__dirname,"data/", dfname))), "utf-8");
-  // console.log(data)
-  if(data.template){
-    var tfname = data.template;
-  }
-  else{
-    var tfname = "index.html";
-  }
-    var template = fs.readFileSync(path.resolve(path.join(__dirname,"templates/", tfname)), "utf-8");
-    var bname = path.basename(dfname, path.extname(dfname))
-    var name = path.join('dist/', bname + '.html')
-    console.log("template file name: "+tfname);
-    console.log("output name: "+name);
-    buildHtml(name, template, data);
-})
 
 
 
@@ -46,7 +46,7 @@ function buildHtml(name,template, fileData) {
   // Write to build folder. Copy the built file and deploy
   fs.writeFile(name, html, err => {
     if (err) console.log(err);
-    console.log("File written succesfully");
+    console.log("File written succesfully:" + name);
     console.log(" ")
   });
 }
